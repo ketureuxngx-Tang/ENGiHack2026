@@ -247,11 +247,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# 2. กำหนดสารมลพิษที่จะวิเคราะห์ (ตัวชี้วัดการเกษตรและน้ำเสีย)
 pollutants = ['BOD_mg_L', 'NO3_mg_L', 'TP_mg_L', 'NH3_mg_L']
 pollutant_labels = ['BOD\n(สารอินทรีย์)', 'NO3\n(ไนเตรต/ปุ๋ย)', 'TP\n(ฟอสฟอรัส)', 'NH3\n(แอมโมเนีย)']
 
-# 3. กรองเฉพาะน้ำเสื่อมโทรม ใน 4 ตำบลวิกฤต
 df_d = df[df['WQI_al_class'] == 'D (เสื่อมโทรม)']
 critical_tambons = ['ธาตุนาเวง', 'เมืองสกลนคร', 'ท่าแร่', 'นาแก้ว']
 df_critical = df_d[df_d['tambon'].isin(critical_tambons)]
@@ -515,7 +513,6 @@ X = df.drop(columns=['record_id', 'date', 'WQI_al_score', 'WQI_al_class'])
 X = pd.get_dummies(X, columns=['season', 'station_id', 'station_type', 'tambon'], drop_first=True)
 y = df['WQI_al_class']
 
-# 3. แบ่งข้อมูล Train 80% / Test 20%
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 # 4. ตั้งค่า Hyperparameters และสร้าง GridSearchCV
@@ -546,7 +543,6 @@ grid_search.fit(X_train, y_train)
 print("Best Hyperparameters:", grid_search.best_params_)
 print(f"Best Cross-Validation Score: {grid_search.best_score_:.4f}")
 
-# 7. ทำนายผลบน Test Set ด้วยโมเดลที่ดีที่สุด
 best_model = grid_search.best_estimator_
 y_pred = best_model.predict(X_test)
 
@@ -557,12 +553,8 @@ print(f"\nTest Set Accuracy: {accuracy_score(y_test, y_pred):.4f}")
 print("Classification Report:\n", classification_report(y_test, y_pred))
 print("Confusion Matrix:\n", cm)
 
-# ==========================================
-# 8. Visualizations & Advanced Outputs (ส่วนเสริมที่เพิ่มเข้ามา)
-# ==========================================
 
-# 8.1 Confusion Matrix Heatmap (มองเห็นภาพชัดเจนว่าโมเดลทายถูก/ผิดตรงไหน)
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(10, 6))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
             xticklabels=best_model.classes_,
             yticklabels=best_model.classes_)
